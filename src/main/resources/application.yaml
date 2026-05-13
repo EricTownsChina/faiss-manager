@@ -1,3 +1,49 @@
 spring:
   application:
     name: faiss-manager
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/faiss_manager
+
+# FAISS Manager 配置
+faiss-manager:
+  # 向量引擎类型: jfaiss (默认)
+  engine: jfaiss
+
+  # 索引文件存储
+  storage:
+    type: local  # local | s3
+    local:
+      base-dir: ./data/indexes
+    s3:
+      bucket: ""
+      prefix: indexes/
+      region: ap-southeast-1
+      endpoint: ""  # 留空使用 AWS 默认，填写用于 MinIO 等兼容存储
+
+  # Embedding 配置
+  embedding:
+    provider: remote
+    remote:
+      url: http://localhost:8080/api/embed
+      batch-size: 32
+      dimension: 768
+      timeout-ms: 30000
+      retry: 3
+
+  # 读路径限流
+  rate-limit:
+    enabled: false
+    search-qps: 100
+
+  # 索引预热
+  warmup:
+    enabled: false
+    index-ids: []
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
